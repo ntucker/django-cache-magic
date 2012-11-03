@@ -11,9 +11,12 @@ from django.db import models
 from django.db.models.fields.related import RelatedField
 from django.db.models.manager import ManagerDescriptor
 from django.utils.functional import curry
+from django.conf import settings
 
 from .relation import Relation
 from .controller import CacheController, no_arg
+
+AUTOCACHE_PRECOMPUTE_RELATED_CACHE = getattr(settings, 'AUTOCACHE_PRECOMPUTE_RELATED_CACHE', True)
 
 ### Module level variable used to track lazy relations during
 ### model initialization.
@@ -28,7 +31,7 @@ def _sort(objects, ordering):
         if order_by[0] == '-':
             order_by = order_by[1:]
             reverse = True
-        objects.sort(key=attrgetter(order_by), reverse=reverse)
+        objects.sort(key=lambda item:attrgetter(order_by) or 0, reverse=reverse)
 
 
 
@@ -72,7 +75,7 @@ class InstanceCacheManager(object):
 
         relation = names[name]
 
-        key = '%s:%s' % (manager.make_key(self.instance.pk), name)
+        key = '%s:%s' % (manager.make_key(pk=self.instance.pk), name)
         objects = self.manager.cache.get(key)
 
         prepare = lambda x: list(x.all())
@@ -90,8 +93,8 @@ class InstanceCacheManager(object):
 
 class RelatedCacheController(CacheController):
 
-    def __init__(self, backend='default', timeout=no_arg):
-        super(RelatedCacheController, self).__init__(backend, timeout)
+    def __init__(self, keys=('pk',), compute_fun=None, backend='default', timeout=no_arg):
+        super(RelatedCacheController, self).__init__(keys, compute_fun, backend, timeout)
         self.relations = []
         self.m2m_relations = []
 
@@ -179,7 +182,7 @@ class RelatedCacheController(CacheController):
         models.signals.post_delete.connect(f, sender=relation.model, weak=False)
 
     def _invalidate_delete(self, relation, pk, instance_pk):
-        key = ':'.join((self.make_key(pk), relation.get_accessor_name()))
+        key = ':'.join((self.make_key(pk=pk), relation.get_accessor_name()))
 
         if isinstance(relation.field, models.OneToOneField):
             self.cache.set(key, self.DNE, self.timeout)
@@ -215,11 +218,11 @@ class RelatedCacheController(CacheController):
                 # nullable fields don't give us that option.
                 self._invalidate_delete(relation, pk_cache, instance.pk)
 
-        key = ':'.join((self.make_key(pk), relation.get_accessor_name()))
+        key = ':'.join((self.make_key(pk=pk), relation.get_accessor_name()))
 
         objects = self.cache.get(key)
 
-        if objects is None:
+        if objects is None and AUTOCACHE_PRECOMPUTE_RELATED_CACHE:
             if isinstance(relation.field, models.OneToOneField):
                 filters = {relation.field.name: pk}
                 try:
@@ -233,7 +236,7 @@ class RelatedCacheController(CacheController):
                 filters = {relation.field.name: pk}
                 objects = relation.model.objects.filter(**filters)
                 self.cache.set(key, list(objects), self.timeout)
-        else:
+        if objects is not None:
             if isinstance(relation.field, models.OneToOneField):
                 self.cache.set(key, instance, self.timeout)
 
@@ -318,7 +321,7 @@ class RelatedCacheController(CacheController):
 
     def _m2m_add_local(self, relation, instance, pk_set, attribute_name, accessor_name):
         """ add the model instances matching pk_set to instance's cache set """
-        key = ':'.join((self.make_key(instance.pk), attribute_name))
+        key = ':'.join((self.make_key(pk=instance.pk), attribute_name))
         objects = self.cache.get(key)
         if objects is None:
             objects = getattr(instance, attribute_name).all()
@@ -338,7 +341,7 @@ class RelatedCacheController(CacheController):
         model = instance.__class__
 
         for pk in pk_set:
-            key = ':'.join((self.make_key(pk), accessor_name))
+            key = ':'.join((self.make_key(pk=pk), accessor_name))
             objects = self.cache.get(key)
             if objects is None:
                 filters = {accessor_name: pk}
@@ -376,7 +379,7 @@ class RelatedCacheController(CacheController):
         model = instance.__class__
 
         for pk in pk_set:
-            key = ':'.join((self.make_key(pk), accessor_name))
+            key = ':'.join((self.make_key(pk=pk), accessor_name))
             objects = self.cache.get(key)
             if objects is None:
                 filters = {accessor_name: pk}
@@ -409,7 +412,7 @@ class RelatedCacheController(CacheController):
 
 
         for object in related_objects:
-            key = ':'.join((self.make_key(object.pk), field_name))
+            key = ':'.join((self.make_key(pk=object.pk), field_name))
             objects = self.cache.get(key)
             objects = None
             if objects is None:

@@ -1,6 +1,8 @@
 import django.core.cache
 from django.db.models import ForeignKey
 from django.db.models.fields.related import ReverseSingleRelatedObjectDescriptor, ManyToOneRel
+from django.db import connection, router
+from django.db.models.query import QuerySet
 
 def key_factory(model, to):
     try:
@@ -70,7 +72,7 @@ class CachingReverseSingleRelatedObjectDescriptor(ReverseSingleRelatedObjectDesc
             setattr(instance, cache_name, rel_obj)
             return rel_obj
 
-
+#TODO: use same key as cache controller
 class CachingForeignKey(ForeignKey):
 
     DNE = 'DOES_NOT_EXIST'
@@ -94,3 +96,21 @@ class CachingForeignKey(ForeignKey):
 
         if self.make_key is None:
             self.make_key = key_factory(self.model, self.rel.to)
+
+try:
+    from south.modelsinspector import add_introspection_rules
+    rules = [
+      (
+        (CachingForeignKey,),
+        [],
+        {
+            "to": ["rel.to", {}],
+            "to_field": ["rel.field_name", {"default_attr": "rel.to._meta.pk.name"}],
+            "related_name": ["rel.related_name", {"default": None}],
+            "db_index": ["db_index", {"default": True}],
+        },
+      )
+    ]
+    add_introspection_rules(rules, ["^autocache\.fields\.CachingForeignKey"])
+except ImportError:
+    pass
