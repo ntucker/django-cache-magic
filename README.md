@@ -1,4 +1,4 @@
-Django-Autocache
+Django-Cache-Magic
 ================
 
 Autocache addresses two common scenarios for caching and cache invalidation
@@ -12,14 +12,14 @@ object referenced by relational constraints (ForeignKey, ManyToMany, etc.)
 
 Installing
 ----------
-    pip install -e "git+git://github.com/noah256/django-autocache.git#egg=autocache"
+    pip install -e "git+https://github.com/ntucker/django-cache-magic#egg=cachemagic"
 
 Usage
 -----
 To start autocaching model instances, add a CacheController to your model:
 
     from django.db import models
-    from autocache import CacheController
+    from cachemagic import CacheController
 
     class myModel(models.Model):
         f1 = models.IntegerField()
@@ -29,9 +29,9 @@ To start autocaching model instances, add a CacheController to your model:
 
     myModel.cache.get(pk=27)
 
-When using autocache, you should avoid django operations that update multiple
+When using cachemagic, you should avoid django operations that update multiple
 rows at once, since these operations typically don't emit the signals that
-autocache relies on for cache invalidation. This includes methods like
+cachemagic relies on for cache invalidation. This includes methods like
 [`Queryset.update`](https://docs.djangoproject.com/en/1.3/ref/models/querysets/#update),
 [`Queryset.delete`](https://docs.djangoproject.com/en/1.3/ref/models/querysets/#delete),
 and
@@ -42,17 +42,17 @@ Find the complete documentation at [django-autocache.readthedocs.org](http://dja
 Running the tests
 -----------------
 Django-Autocache has a sample django application that tests the caching
-machinery. To run tests, start by cloning the autocache repository and
+machinery. To run tests, start by cloning the cachemagic repository and
 entering the `test_project` directory.
 
 The tests run using memcached and pylibmc. You can change the backend by
-editing `autocache/tests/settings.py`. (TODO: get the test suite to run
+editing `cachemagic/tests/settings.py`. (TODO: get the test suite to run
 multiple times with different backends)
 
 - Start two memcached servers (testing multicache)
     - `memcached -p 11211 -U 0`
     - `memcached -p 11212 -U 0`
-- Change into the `autocache/test_project/` directory and run `manage.py test`
+- Change into the `cachemagic/test_project/` directory and run `manage.py test`
 
 Thanks
 ------

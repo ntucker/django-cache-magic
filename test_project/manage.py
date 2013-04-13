@@ -10,7 +10,7 @@ except ImportError:
 
 import settings
 
-# add the parent directory to sys.path so that the test module has autocache
+# add the parent directory to sys.path so that the test module has cachemagic
 # in it's python path
 import sys, os
 testdir = os.path.dirname(__file__)

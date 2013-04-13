@@ -1,6 +1,6 @@
 from django.db import models
 
-from autocache import RelatedCacheController, CachingForeignKey
+from cachemagic import RelatedCacheController, CachingForeignKey
 
 
 class Person(models.Model):

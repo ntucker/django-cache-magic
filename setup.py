@@ -1,10 +1,10 @@
 from distutils.core import setup
 
-setup(name='autocache',
+setup(name='cachemagic',
       version='0.1.0',
-      description='Django Autocache',
-      author='Noah Silas',
-      author_email='noah@silas.cc',
-      url='http://www.github.com/noah256/django-autocache',
-      packages=['autocache'],
+      description='Django Cache Magic',
+      author='Nathaniel Tucker',
+      author_email='me@ntucker.me',
+      url='https://github.com/ntucker/django-cache-magic',
+      packages=['cachemagic'],
      )

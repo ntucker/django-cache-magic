@@ -16,7 +16,7 @@ from django.conf import settings
 from .relation import Relation
 from .controller import CacheController, no_arg
 
-AUTOCACHE_PRECOMPUTE_RELATED_CACHE = getattr(settings, 'AUTOCACHE_PRECOMPUTE_RELATED_CACHE', True)
+CACHEMAGIC_PRECOMPUTE_RELATED_CACHE = getattr(settings, 'CACHEMAGIC_PRECOMPUTE_RELATED_CACHE', True)
 
 ### Module level variable used to track lazy relations during
 ### model initialization.
@@ -222,7 +222,7 @@ class RelatedCacheController(CacheController):
 
         objects = self.cache.get(key)
 
-        if objects is None and AUTOCACHE_PRECOMPUTE_RELATED_CACHE:
+        if objects is None and CACHEMAGIC_PRECOMPUTE_RELATED_CACHE:
             if isinstance(relation.field, models.OneToOneField):
                 filters = {relation.field.name: pk}
                 try:
