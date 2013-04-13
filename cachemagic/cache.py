@@ -13,7 +13,7 @@ except ImportError:
     from datetime import datetime
     now = datetime.now
 
-from redis_cache import RedisCache
+from redis_cache.cache import RedisCache
 
 class Marker(object):
     pass
@@ -78,7 +78,7 @@ class RedisHerdCache(RedisCache):
             real_timeout = timeout
         return super(RedisHerdCache, self).set(key, packed_val, real_timeout, version=version, client=client)
     
-    def add(self, key, value, timeout=None, version=None, client=None, herd=True):
+    def add(self, key, value, timeout=None, version=None, herd=True):
         """
         Persist a value to the cache, and set an optional expiration time.
         """
@@ -89,7 +89,7 @@ class RedisHerdCache(RedisCache):
         else:
             packed_val = value
             real_timeout = timeout
-        return super(RedisHerdCache, self).add(key, packed_val, real_timeout, version=version, client=client)
+        return super(RedisHerdCache, self).add(key, packed_val, real_timeout, version=version)
     
     def delete(self, key, version=None):
         """
@@ -144,6 +144,6 @@ class RedisHerdCache(RedisCache):
         # If there are values to re-insert for a short period of time, then do
         # so now.
         if reinsert:
-            self._cache.set_multi(reinsert, timeout=self.HERD_DELAY, version=version)
+            self.set_many(reinsert, timeout=self.HERD_DELAY, version=version)
         
         return resp

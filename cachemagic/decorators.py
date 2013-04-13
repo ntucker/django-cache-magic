@@ -18,6 +18,9 @@ class invalidate(object):
     
     def contribute_to_class(self, cls, name):
         setattr(cls, name, self.func)
+        setattr(cls, "__".join((name, 'post_save')), self.post_save)
+        setattr(cls, "__".join((name, 'post_delete')), self.post_delete)
+        setattr(cls, "__".join((name, 'context')), self)
         
         dispatch_uid = self.make_key("")
         

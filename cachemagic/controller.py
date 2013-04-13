@@ -17,7 +17,7 @@ class CacheController(object):
         if compute_fun is None:
             self.compute_obj = lambda **kwargs: self.model.objects.get(**kwargs)
         else:
-            self.compute_obj = compute_fun
+            self.compute_obj = lambda **kwargs: getattr(self.model, compute_fun)(**kwargs)
         
         if backend is 'default':
             self.cache = django.core.cache.cache
@@ -67,17 +67,17 @@ class CacheController(object):
         kwargs = {key:getattr(instance, key) for key in self.keys}
         key = self.make_key(**kwargs)
         obj = self.cache.get(key)
-        self.cache.set(key, obj, self.cache.HERD_DELAY)
+        self.cache.set(key, obj, timeout=getattr(self.cache, 'HERD_DELAY', 30))
 
     def post_save(self, instance, **kwargs):
         kwargs = {key:getattr(instance, key) for key in self.keys}
         key = self.make_key(**kwargs)
         new_obj = self.compute_obj(**kwargs)
-        self.cache.set(key, new_obj, self.timeout)
+        self.cache.set(key, new_obj, timeout=self.timeout)
 
     def post_delete(self, instance, **kwargs):
         kwargs = {key:getattr(instance, key) for key in self.keys}
         key = self.make_key(**kwargs)
-        self.cache.set(key, self.DNE, self.timeout)
+        self.cache.set(key, self.DNE, timeout=self.timeout)
 
 
