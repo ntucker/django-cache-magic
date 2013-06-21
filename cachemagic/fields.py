@@ -111,6 +111,6 @@ try:
         },
       )
     ]
-    add_introspection_rules(rules, ["^autocache\.fields\.CachingForeignKey"])
+    add_introspection_rules(rules, ["^cachemagic\.fields\.CachingForeignKey"])
 except ImportError:
     pass
