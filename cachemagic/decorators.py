@@ -29,8 +29,12 @@ class invalidate(object):
                 model = cls
             elif isinstance(model, basestring):
                 module, target = model.rsplit('.', 1)
-                mod = import_module(module)
-                model = getattr(mod, target, None)
+                try:
+                    mod = import_module(module)
+                except ImportError:
+                    model = None
+                else:
+                    model = getattr(mod, target, None)
                 # this model doesn't exist yet, so setup a class_prepared signal
                 if model is None:
                     def add_signals(sender, **kwargs):
@@ -40,8 +44,9 @@ class invalidate(object):
                     models.signals.class_prepared.connect(add_signals, weak=False, dispatch_uid=dispatch_uid)
                     continue
 
-            models.signals.post_save.connect(self.post_save, sender=model, weak=False, dispatch_uid=dispatch_uid)
-            models.signals.post_delete.connect(self.post_delete, sender=model, weak=False, dispatch_uid=dispatch_uid)
+            if model is not None:
+                models.signals.post_save.connect(self.post_save, sender=model, weak=False, dispatch_uid=dispatch_uid)
+                models.signals.post_delete.connect(self.post_delete, sender=model, weak=False, dispatch_uid=dispatch_uid)
 
     def make_key(self, item_key):
         return ":".join((KEY_PREFIX, self.signature.__module__, self.signature.__name__, str(item_key)))
