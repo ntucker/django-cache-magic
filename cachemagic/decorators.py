@@ -1,3 +1,4 @@
+from django.utils import six
 from django.core.cache import cache
 import cPickle as pickle
 import functools
@@ -27,7 +28,7 @@ class invalidate(object):
         for model in self.target_models:
             if model == 'self':
                 model = cls
-            elif isinstance(model, basestring):
+            elif isinstance(model, six.string_types):
                 module, target = model.rsplit('.', 1)
                 try:
                     mod = import_module(module)
