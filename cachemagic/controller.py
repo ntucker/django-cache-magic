@@ -1,7 +1,9 @@
+from __future__ import unicode_literals
 
 import django.core.cache
 from django.db import models
 from django.db.models.manager import ManagerDescriptor
+from django.utils.encoding import force_text
 
 no_arg = object()
 
@@ -32,8 +34,8 @@ class CacheController(object):
     def make_key(self, **kwargs):
         parts = [self.model._meta.app_label, self.model.__name__]
         for key in self.keys:
-            parts.append(u":".join((key, unicode(kwargs[key]))))
-        return u":".join(parts)
+            parts.append(":".join((key, force_text(kwargs[key]))))
+        return ":".join(parts)
 
     def get(self, **kwargs):
         key = self.make_key(**kwargs)
