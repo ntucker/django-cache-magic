@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 ============================================
-Welcome to the Django-Autocache Documenation
+Welcome to the Django-Cache-Magic Documenation
 ============================================
 
 Table of Contents:

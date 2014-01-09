@@ -7,7 +7,7 @@ signals that the model it is attached to will emit when you alter an instance.
 This allows it to automatically keep cached instances up to date! ::
 
     from django.db import models
-    from autocache.controller import CacheController
+    from cachemagic.controller import CacheController
 
     class Model(models.Model):
         field1 = IntegerField()
@@ -122,7 +122,7 @@ constructor as the keyword argument ``backend``.
 Caveats
 =======
 
-Autocache relies on the post_save and post_delete signals to keep your cache
+CacheMagic relies on the post_save and post_delete signals to keep your cache
 up to date. Performing operations that alter the database state without
 sending these signals will result in your cache becoming out of sync with your
 database.

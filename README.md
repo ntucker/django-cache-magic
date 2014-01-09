@@ -1,7 +1,7 @@
 Django-Cache-Magic
 ================
 
-Autocache addresses two common scenarios for caching and cache invalidation
+Cache magic addresses two common scenarios for caching and cache invalidation
 for django models: *instance caching* and *related objects caching*.
 
 Instance caching: Storing instances of objects in your cache layer
@@ -37,22 +37,8 @@ cachemagic relies on for cache invalidation. This includes methods like
 and
 [`RelatedManager.clear`](https://docs.djangoproject.com/en/1.3/ref/models/relations/#django.db.models.fields.related.RelatedManager.clear)
 
-Find the complete documentation at [django-autocache.readthedocs.org](http://django-autocache.readthedocs.org/).
+Find the complete documentation at [django-cache-magic.readthedocs.org](http://django-cache-magic.readthedocs.org/).
 
-Running the tests
------------------
-Django-Autocache has a sample django application that tests the caching
-machinery. To run tests, start by cloning the cachemagic repository and
-entering the `test_project` directory.
-
-The tests run using memcached and pylibmc. You can change the backend by
-editing `cachemagic/tests/settings.py`. (TODO: get the test suite to run
-multiple times with different backends)
-
-- Start two memcached servers (testing multicache)
-    - `memcached -p 11211 -U 0`
-    - `memcached -p 11212 -U 0`
-- Change into the `cachemagic/test_project/` directory and run `manage.py test`
 
 Thanks
 ------

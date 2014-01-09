@@ -12,7 +12,7 @@ of a Foreign Key.
 We will be using the following models as examples throughout this document: ::
 
     from django.db import models
-    from autocache.controllers import RelatedCacheController
+    from cachemagic.controllers import RelatedCacheController
 
     class Person(models.Model):
         name = models.CharField(max_length=200)
@@ -45,7 +45,7 @@ this: ::
 
 This pattern will invoke two database queries: one to fetch a Person, and
 one to fetch the books with a foreign key relationship to the author. We can
-use the autocache features to try the cache first. ::
+use the cachemagic features to try the cache first. ::
 
     author = Person.objects.get(pk=author_id)   # database query
     author = Person.cache.get(pk=author_id)     # cached query

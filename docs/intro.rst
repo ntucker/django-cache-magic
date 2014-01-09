@@ -2,19 +2,19 @@
 Introduction
 =====================================
 
-Autocache addresses two of the most common scenarios for caching and cache
+CacheMagic addresses two of the most common scenarios for caching and cache
 invalidation for django models: `instance caching` and `related objects
 caching`.
 
 
 Instance Caching
 ================
-This is the practice of caching individual model instances. Autocache provides
+This is the practice of caching individual model instances. CacheMagic provides
 a `CacheController` that you can attach to models to cause automatic caching and
 invalidations. ::
 
     class Model(django.models.Model):
-        cache = autocache.CacheController()
+        cache = cachemagic.CacheController()
         field = django.models.TextField()
 
     Model.objects.get(pk=27)    # hits the database
