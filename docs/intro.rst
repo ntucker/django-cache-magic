@@ -2,9 +2,18 @@
 Introduction
 =====================================
 
-CacheMagic addresses two of the most common scenarios for caching and cache
-invalidation for django models: `instance caching` and `related objects
-caching`.
+CacheMagic addresses the most common scenarios for caching and cache
+invalidation: `temporal caching`, `instance caching`, `related objects
+caching`, and `thundering herd` protection.
+
+Temporal Caching
+================
+This is like memoizing an expensive operation. Usually something that doesn't need to be super-fresh,
+and aggregates many objects - making invalidation difficult or impossible.::
+
+    @cached
+    def my_expensive_call(arg1, arg2):
+        return do_other_things(arg1) * arg2
 
 
 Instance Caching
@@ -36,4 +45,18 @@ The RelatedCacheController will automatically detect and cache objects related
 to the model it resides on by ForeignKeys, ManyToManyFields, and
 OneToOneFields.
 
+
+Thundering Herd Protection
+==========================
+Any caching will be useless when a cache key expires and thousands of requests try to recompute the value
+at the same time. CacheMagic provides a cache backend for redis that prevents this problem by designating
+only one client to recompute the value while others simply read the existing cache value. ::
+
+    CACHES['default'] = {
+        'BACKEND': 'cachemagic.cache.RedisHerdCache',
+        'LOCATION': ':'.join([REDIS_HOST, str(REDIS_PORT), '0']),
+        'OPTIONS': {
+            'PASSWORD': REDIS_PASSWORD,
+        },
+    }
 
