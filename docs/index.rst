@@ -17,4 +17,4 @@ Table of Contents:
    temporal_caching
    instance_caching
    related_caching
-
+   thundering_herd_protection
