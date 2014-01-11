@@ -14,6 +14,7 @@ Table of Contents:
 
    intro
    examples
+   temporal_caching
    instance_caching
    related_caching
 
