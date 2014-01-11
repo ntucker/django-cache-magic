@@ -40,8 +40,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'autocache'
-copyright = u'2011, Noah Silas'
+project = u'cachemagic'
+copyright = u'2011-2014, Noah Silas, Nathaniel Tucker'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -179,7 +179,7 @@ htmlhelp_basename = 'autocachedoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'autocache.tex', u'autocache Documentation',
-   u'Noah Silas', 'manual'),
+   u'Nathaniel Tucker', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -212,5 +212,5 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'autocache', u'autocache Documentation',
-     [u'Noah Silas'], 1)
+     [u'Nathaniel Tucker'], 1)
 ]
