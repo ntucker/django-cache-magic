@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 
-from setuptools import setup, find_packages
 import os.path
+
+from setuptools import setup, find_packages
+
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -15,7 +17,7 @@ setup(name='django-cache-magic',
       packages=find_packages(),
       include_package_data=True,
       install_requires=['django>=1.3', ],
-      long_description=read('README.md'),
+      long_description=read('README.rst'),
       license="BSD",
       classifiers=[
           'Development Status :: 4 - Beta',

@@ -1,5 +1,5 @@
 Django-Cache-Magic
-================
+==================
 
 Cache magic addresses two common scenarios for caching and cache invalidation
 for django models: *instance caching* and *related objects caching*.
@@ -12,11 +12,15 @@ object referenced by relational constraints (ForeignKey, ManyToMany, etc.)
 
 Installing
 ----------
-    pip install -e "git+https://github.com/ntucker/django-cache-magic#egg=cachemagic"
+.. code-block:: bash
+
+    pip install django-cache-magic
 
 Usage
 -----
 To start autocaching model instances, add a CacheController to your model:
+
+.. code-block:: python
 
     from django.db import models
     from cachemagic import CacheController
@@ -31,16 +35,19 @@ To start autocaching model instances, add a CacheController to your model:
 
 When using cachemagic, you should avoid django operations that update multiple
 rows at once, since these operations typically don't emit the signals that
-cachemagic relies on for cache invalidation. This includes methods like
-[`Queryset.update`](https://docs.djangoproject.com/en/1.3/ref/models/querysets/#update),
-[`Queryset.delete`](https://docs.djangoproject.com/en/1.3/ref/models/querysets/#delete),
-and
-[`RelatedManager.clear`](https://docs.djangoproject.com/en/1.3/ref/models/relations/#django.db.models.fields.related.RelatedManager.clear)
+cachemagic relies on for cache invalidation. This includes methods like `Queryset.update`_,
+`Queryset.delete`_, and `RelatedManager.clear`_
 
-Find the complete documentation at [django-cache-magic.readthedocs.org](http://django-cache-magic.readthedocs.org/).
+Find the complete documentation at `django-cache-magic.readthedocs.org`_.
 
 
 Thanks
 ------
-Big thanks to [Travis Fischer](https://github.com/travisfischer) for drafting
+Big thanks to `Travis Fischer`_ for drafting
 a lot of documentation and tests!
+
+.. _Queryset.update: https://docs.djangoproject.com/en/1.3/ref/models/querysets/#update
+.. _Queryset.delete: https://docs.djangoproject.com/en/1.3/ref/models/querysets/#delete
+.. _RelatedManager.clear: https://docs.djangoproject.com/en/1.3/ref/models/relations/#django.db.models.fields.related.RelatedManager.clear
+.. _django-cache-magic.readthedocs.org: http://django-cache-magic.readthedocs.org/
+.. _Travis Fischer: https://github.com/travisfischer
