@@ -1,3 +1,5 @@
+import types
+
 from django.utils import six
 from django.core.cache import cache
 import cPickle as pickle
@@ -5,12 +7,14 @@ import functools
 from django.db import models
 from django.utils.importlib import import_module
 
+
 class Property(property):
     pass
 
 DNE = "!!!!DNE!!!!"
 KEY_PREFIX = "FUNCTION_CACHE"
 TIMEOUT = 100000
+
 
 class invalidate(object):
     def __init__(self, func):
@@ -55,11 +59,14 @@ class invalidate(object):
         return cache.get(self.make_key(item_key), None)
     def set(self, item_key, value, timeout=None):
         timeout = timeout or TIMEOUT
+        if isinstance(value, types.GeneratorType):
+            value = list(value)
         return cache.set(self.make_key(item_key), value, timeout)
     def delete(self, item_key):
         return cache.delete(self.make_key(item_key))
     def __contains__(self, item_key):
         return cache.get(self.make_key(item_key), None) is not None
+
 
 def cached(key_func=None, timeout=None):
     key_func = key_func or (lambda *args, **kwargs: pickle.dumps((args, kwargs), pickle.HIGHEST_PROTOCOL))
@@ -71,6 +78,8 @@ def cached(key_func=None, timeout=None):
             ret = cache.get(key, DNE)
             if ret == DNE:
                 ret = func(*args, **kwargs)
+                if isinstance(ret, types.GeneratorType):
+                    ret = list(ret)
                 if callable(timeout):
                     tout = timeout(ret)
                 else:
