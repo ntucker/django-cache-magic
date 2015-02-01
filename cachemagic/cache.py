@@ -13,7 +13,7 @@ except ImportError:
     from datetime import datetime
     now = datetime.now
 
-from redis_cache.cache import RedisCache
+from django_redis.cache import RedisCache
 
 class Marker(object):
     pass

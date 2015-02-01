@@ -7,7 +7,7 @@ from eventlet.queue import Empty
 from redis import Redis, ConnectionPool
 from redis.exceptions import ConnectionError
 from redis.connection import UnixDomainSocketConnection, Connection
-from redis_cache.client.default import DefaultClient
+from django_redis.client.default import DefaultClient
 
 from django.conf import settings
 
