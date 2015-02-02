@@ -24,7 +24,7 @@ class CacheController(object):
         if backend is 'default':
             self.cache = django.core.cache.cache
         else:
-            self.cache = django.core.cache.get_cache(backend)
+            self.cache = django.core.cache.caches[backend]
 
         if timeout is no_arg:
             self.timeout = self.DEFAULT_TIMEOUT

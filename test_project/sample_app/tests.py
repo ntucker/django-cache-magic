@@ -1,9 +1,9 @@
 from django.test import TestCase
-from django.core.cache import cache, get_cache
+from django.core.cache import cache, caches
 
 from .models import Person, Book, Volume
 
-other_cache = get_cache('other')
+other_cache = caches['other']
 
 class CacheControllerTests(TestCase):
 

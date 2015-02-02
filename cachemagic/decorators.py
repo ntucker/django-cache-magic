@@ -1,11 +1,11 @@
 import types
+from importlib import import_module
 
 from django.utils import six
 from django.core.cache import cache
 import cPickle as pickle
 import functools
 from django.db import models
-from django.utils.importlib import import_module
 
 
 class Property(property):

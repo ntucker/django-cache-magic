@@ -88,7 +88,7 @@ class CachingForeignKey(ForeignKey):
         if backend is 'default':
             self.cache = django.core.cache.cache
         else:
-            self.cache = django.core.cache.get_cache(backend)
+            self.cache = django.core.cache.caches[backend]
 
     def contribute_to_class(self, cls, name):
         super(CachingForeignKey, self).contribute_to_class(cls, name)
