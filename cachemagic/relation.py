@@ -1,5 +1,5 @@
 class Relation(object):
-    """ Wrapper around django.db.models.related.RelatedObject.
+    """ Wrapper around django.db.models.fields.related.ForeignObjectRel.
         Since the wrapped object isn't a stable public API, we
         want to be able to update this wrapper if RelatedObject
         changes, instead of changing everything else ever.

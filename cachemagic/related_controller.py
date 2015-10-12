@@ -127,7 +127,7 @@ class RelatedCacheController(CacheController):
             if isinstance(field, RelatedField):
                 if field.rel.to is self.model:
                     if hasattr(field, 'related'):
-                        self._setup_relation(field.related)
+                        self._setup_relation(field.rel)
                     else:
                         # This is a lazy relation
                         # Look for an "app.Model" relation
@@ -168,7 +168,7 @@ class RelatedCacheController(CacheController):
             if isinstance(field, models.ManyToManyField):
                 self._setup_m2m_relation(field)
             else:
-                self._setup_relation(field.related)
+                self._setup_relation(field.rel)
 
     def _setup_relation(self, relation):
         """ Given a relation to this model, hooks up cache invalidation functions
@@ -277,16 +277,16 @@ class RelatedCacheController(CacheController):
         """
 
         if field.model is self.model:
-            self.m2m_relations.append(field.related)
+            self.m2m_relations.append(field.rel)
         else:
-            self.relations.append(field.related)
+            self.relations.append(field.rel)
 
-        f = curry(self.post_m2m_invalidate, field.related)
+        f = curry(self.post_m2m_invalidate, field.rel)
         models.signals.m2m_changed.connect(f, sender=field.rel.through, weak=False)
 
-        remote = field.related.model is self.model
-        sender = field.related.parent_model if remote else field.related.model
-        f = curry(self.m2m_post_save_invalidate, field.related)
+        remote = field.rel.model is self.model
+        sender = field.rel.parent_model if remote else field.rel.model
+        f = curry(self.m2m_post_save_invalidate, field.rel)
         models.signals.post_save.connect(f, sender=sender, weak=False)
 
     def post_m2m_invalidate(self, relation, sender, instance, action, reverse, model, pk_set, **kwargs):
