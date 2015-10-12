@@ -154,7 +154,8 @@ class RelatedCacheController(CacheController):
         """ Called when self.model is fully initialized; registers all
             known relations for cache handling.
         """
-        for relation in self.model._meta.get_all_related_objects():
+        for relation in [f for f in self.model._meta.get_fields()
+                         if (f.one_to_many or f.one_to_one) and f.auto_created]:
             self._setup_relation(relation)
 
         for field in self.model._meta.many_to_many:
@@ -173,13 +174,13 @@ class RelatedCacheController(CacheController):
         """ Given a relation to this model, hooks up cache invalidation functions
         """
         self.relations.append(relation)
-        setattr(relation.model, relation.field.name + '_id', FieldCachingDescriptor(relation.field.name + '_id'))
+        setattr(relation.related_model, relation.field.name + '_id', FieldCachingDescriptor(relation.field.name + '_id'))
 
         f = curry(self.related_post_save_invalidate, relation)
-        models.signals.post_save.connect(f, sender=relation.model, weak=False)
+        models.signals.post_save.connect(f, sender=relation.related_model, weak=False)
 
         f = curry(self.related_post_delete_invalidate, relation)
-        models.signals.post_delete.connect(f, sender=relation.model, weak=False)
+        models.signals.post_delete.connect(f, sender=relation.related_model, weak=False)
 
     def _invalidate_delete(self, relation, pk, instance_pk):
         key = ':'.join((self.make_key(pk=pk), relation.get_accessor_name()))
