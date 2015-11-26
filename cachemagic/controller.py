@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import django.core.cache
 from django.db import models
+from django.db import connection
 from django.db.models.manager import ManagerDescriptor
 from django.utils.encoding import force_text
 
@@ -50,7 +51,12 @@ class CacheController(object):
         elif obj == self.DNE:
             raise self.model.DoesNotExist()
         return obj
-
+    
+    def delete(self, instance):
+        kwargs = {key:getattr(instance, key) for key in self.keys}
+        key = self.make_key(**kwargs)
+        connection.on_commit(lambda: self.cache.delete(key))
+        
     def contribute_to_class(self, model, name):
         self.model = model
 
@@ -72,14 +78,20 @@ class CacheController(object):
         self.cache.set(key, obj, timeout=getattr(self.cache, 'HERD_DELAY', 30))
 
     def post_save(self, instance, **kwargs):
+        #print('<<<<<<<<<<<<')
+        #print(kwargs.get('update_fields', None))
         kwargs = {key:getattr(instance, key) for key in self.keys}
         key = self.make_key(**kwargs)
-        new_obj = self.compute_obj(**kwargs)
-        self.cache.set(key, new_obj, timeout=self.timeout)
+        def update_cache():
+            new_obj = self.compute_obj(**kwargs)
+            self.cache.set(key, new_obj, timeout=self.timeout)
+            #if set(kwargs.get('update_fields', set())).intersect(self.keys):
+                
+        connection.on_commit(update_cache)
 
     def post_delete(self, instance, **kwargs):
         kwargs = {key:getattr(instance, key) for key in self.keys}
         key = self.make_key(**kwargs)
-        self.cache.set(key, self.DNE, timeout=self.timeout)
+        connection.on_commit(lambda: self.cache.set(key, self.DNE, timeout=self.timeout))
 
 
